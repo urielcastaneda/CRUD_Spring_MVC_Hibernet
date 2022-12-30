@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+  	http://www.springframework.org/schema/beans/spring-beans.xsd
+  	http://www.springframework.org/schema/aop 
+  	http://www.springframework.org/schema/aop/spring-aop.xsd
+  	http://www.springframework.org/schema/context 
+  	http://www.springframework.org/schema/context/spring-context.xsd
+  	http://www.springframework.org/schema/tx 
+  	http://www.springframework.org/schema/tx/spring-tx.xsd
+  	http://www.springframework.org/schema/mvc 
+  	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+  	">
+
+	<!-- Nombre del paquete para Ubicación de todos los componentes  -->
+	<context:component-scan base-package="ucs.catedra" />
+
+	<!-- DispatcherServlet Context: Gestiona las peticines enviadas para procesamiento 
+	     del servlet  infrastructure -->
+
+	<!-- Habilita el modelo de procesamento MVC - elemento controlador    @Controller    -->
+
+	<tx:annotation-driven />
+ 	
+    <mvc:default-servlet-handler/>   
+
+	<mvc:annotation-driven/>
+
+	<!-- Gestiona los requerimientos HTTP GET direccionando la ruta  /recursos/** para servir los elementos -->
+	<!-- estáticos en el directorio  ${pageContext.request.contextPath}/resources/   **************** -->	
+	<mvc:resources 	location="/WEB-INF/resources/" 
+					mapping="/resources/**" />
+	
+
+	<!-- Resuelve las peticiones para renderizar las vistas   @Controllers en formato .jsp  
+		ubicadas em en directorio  /WEB-INF/views -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+	<!-- ******************* DataSource & connection pool ********************** -->
+	<bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close">
+        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/agenda?useSSL=false&amp;serverTimezone=UTC" />
+        <property name="user" value="root" />
+        <property name="password" value="root" /> 
+
+        <!-- C3P0 connection pool -->
+        <property name="minPoolSize" value="2" />
+        <property name="maxPoolSize" value="10" />
+        <property name="maxIdleTime" value="20000" />
+	</bean> 
+
+	<!-- *************** CONFIGURACIÓN INTEFACE FrameWork HIBERNATE 5 ******************* -->
+	<!--  Hibernate session factory -->
+	<bean name="factory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		
+		<!-- ******* data source ( conexión a B.D. referenciada ) ******** -->
+		<property name="dataSource" ref="myDataSource" />
+		
+		<!-- ******* Ubucación de las definiciones de las tablas (modelos de entidades) -->
+		<property name="packagesToScan" value="catedra.urielcs.spring.model" />
+		
+		<!-- ******* configuración de otros parámetros ******** -->
+		<property name="hibernateProperties">
+		   <props>
+		      <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+		      <prop key="hibernate.show_sql">true</prop>     <!-- muestra en consola todos los Querys -->
+			  <prop key="hibernate.hbm2ddl.auto">update</prop>		      
+		   </props>
+		</property>
+
+		<!-- ******** Para generación de listados (SELECTs ) *************** -->
+		<!-- annotated classes -->
+		<property name="annotatedClasses">
+			<list>
+				<value>ucs.catedra.model.Contacto</value>
+				<!-- aquí se pueden definir otros que se requieran ... -->
+			</list>
+		</property>		
+
+   </bean>	  
+
+	<!-- Configuración de la plantilla Hibernate para puente con la SectionFactory  -->
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory"></property>
+	</bean>
+	
+	<!-- Configuración del manejador de transacciones para sessionFactory  -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--  Hibernate TransactionManager -->
+	<bean id="transactionManager"
+            class="org.springframework.orm.hibernate5.HibernateTransactionManager">       
+        <property name="sessionFactory" ref="factory"/>
+    </bean>
+    
+
+</beans>

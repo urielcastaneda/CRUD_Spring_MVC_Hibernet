@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id = "WebApp_ID" version = "2.4"
+   xmlns = "http://java.sun.com/xml/ns/javaee" 
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation = "http://java.sun.com/xml/ns/j2ee 
+   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    
+   <display-name>CRUD SpringMVC Catedra UCS1</display-name>
+   
+	<absolute-ordering />
+
+	<!-- verificar funcionalidad para archivos xhtml -->	
+ 	<welcome-file-list>
+	  <welcome-file>index.jsp</welcome-file>
+	  <welcome-file>index.html</welcome-file>
+	  <welcome-file>index.xhtml</welcome-file>	  
+	</welcome-file-list>
+
+ 
+ 	<!-- Aquí realizamos la configuración del Servlet DISPARADOR INICIAL -->
+ 	<!-- operan conjuntamente  <servlet> y <servlet-mapping>  -->
+	<!-- ================================================== -->
+   <servlet>
+      <servlet-name>spring</servlet-name>
+      <servlet-class>
+         org.springframework.web.servlet.DispatcherServlet
+      </servlet-class>
+
+	  <!--  El archivo de configuración que es disparado, por defecto se llama spring-sevlet.xml  -->
+	  <!--  en este caso, el (servlet-name = spring) y no es necesario especificar el nombre   -->
+	  <!--  cuando se utiliza otro nombre y ruta, entonces se especifican las lineas siguiente -->
+	  <!--                 por ejemplo, usando un archivo con nombre (servlet-context.xml)
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/servlet-context.xml</param-value>
+		</init-param>      
+     -->            
+      
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <!-- Ubicación URL del servlet -->
+   <servlet-mapping>
+      <servlet-name>spring</servlet-name>
+      <url-pattern>/</url-pattern>
+   </servlet-mapping>
+   
+    
+</web-app>
